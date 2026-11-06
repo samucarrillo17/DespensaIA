@@ -8,6 +8,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { CacheModule } from '@nestjs/cache-manager';
 import { createKeyv } from '@keyv/redis';
+import { IngredientesModule } from './ingredientes/ingredientes.module';
 
 @Module({
   imports: [
@@ -15,16 +16,7 @@ import { createKeyv } from '@keyv/redis';
       validationSchema: joiValidationSchema,
     }),
 
-    CacheModule.registerAsync({
-      isGlobal: true,
-      useFactory: async () => ({
-        stores: [
-          createKeyv(
-            `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
-          ),
-        ],
-      }),
-    }),
+    
 
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -34,6 +26,7 @@ import { createKeyv } from '@keyv/redis';
       password: process.env.DB_PASSWORD,
       autoLoadEntities: true,
       database: process.env.DB_NAME,
+      synchronize: true,
     }),
 
     ThrottlerModule.forRoot({
@@ -48,6 +41,8 @@ import { createKeyv } from '@keyv/redis';
     CommonModule,
 
     AuthModule,
+
+    IngredientesModule,
   ],
   controllers: [],
   providers: [
