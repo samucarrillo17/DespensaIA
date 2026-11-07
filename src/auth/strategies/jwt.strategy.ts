@@ -10,16 +10,15 @@ import { ConfigService } from '@nestjs/config';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 
 import { JwtPayload } from '../interfaces/jwt.interface';
-// import { UserService } from 'src/user/user.service';
-// import { User } from 'src/user/entities/user.entity';
-// import { handleDBException } from 'src/utilities/helpers/handleDbException';
+import { Usuario } from '../../usuarios/entities/usuario.entity';
+
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     configService: ConfigService,
-    // @InjectRepository(User)
-    // private usuarioRepository: Repository<User>,
+    @InjectRepository(Usuario)
+    private usuarioRepository: Repository<Usuario>,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -28,30 +27,22 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any | JwtPayload) {
-    // const { id } = payload;
-    // const user = await this.usuarioRepository.findOne({
-    //   where: { id },
-    //   select: {
-    //     id: true,
-    //     name: true,
-    //     email: true,
-    //     role: true,
-    //     isActive: true,
-    //   },
-    // });
+    const { id } = payload;
+    const user = await this.usuarioRepository.findOne({
+      where: { id },
+      select: {
+        id: true,
+        nombre: true,
+        correo: true,
+        createdAt: true,
+      },
+    });
 
-    // if (!user) {
-    //   throw new UnauthorizedException('Token no valido');
-    // }
+    if (!user) {
+      throw new UnauthorizedException('Token no valido');
+    }
 
-    // if(user?.isActive === false){
-    //     throw new UnauthorizedException('Usuario no activo');
-    //  }
 
-    //  if (!user || tokenVersion !== user?.tokenVersion) {
-    //    throw new UnauthorizedException('Token not valid');
-    //  }
-
-    // return user;
+    return user;
   }
 }
