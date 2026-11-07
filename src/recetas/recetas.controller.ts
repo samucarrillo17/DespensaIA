@@ -13,11 +13,15 @@ import {
 import { RecetasService } from './recetas.service';
 import { CreateRecetaDto } from './dto/create-receta.dto';
 import { UpdateRecetaDto } from './dto/update-receta.dto';
+import { Auth } from '../auth/decorator/auth.decorator';
+import { Throttle } from '@nestjs/throttler';
 
+@Auth()
 @Controller('recetas')
 export class RecetasController {
   constructor(private readonly recetasService: RecetasService) {}
 
+  @Throttle({ default: { limit: 5, ttl: 120000 } })
   @Post()
   create(@Body() createRecetaDto: CreateRecetaDto) {
     return this.recetasService.create(createRecetaDto);
@@ -36,11 +40,13 @@ export class RecetasController {
     return this.recetasService.findOne(id);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 120000 } })
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateRecetaDto: UpdateRecetaDto) {
     return this.recetasService.update(id, updateRecetaDto);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 120000 } })
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.recetasService.remove(id);
