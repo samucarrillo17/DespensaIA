@@ -10,6 +10,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { createKeyv } from '@keyv/redis';
 import { IngredientesModule } from './ingredientes/ingredientes.module';
 import { RecetasModule } from './recetas/recetas.module';
+import { UsuariosModule } from './usuarios/usuarios.module';
 
 @Module({
   imports: [
@@ -46,6 +47,8 @@ import { RecetasModule } from './recetas/recetas.module';
     IngredientesModule,
 
     RecetasModule,
+
+    UsuariosModule,
   ],
   controllers: [],
   providers: [
