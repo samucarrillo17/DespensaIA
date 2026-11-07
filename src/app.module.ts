@@ -9,6 +9,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { CacheModule } from '@nestjs/cache-manager';
 import { createKeyv } from '@keyv/redis';
 import { IngredientesModule } from './ingredientes/ingredientes.module';
+import { RecetasModule } from './recetas/recetas.module';
 
 @Module({
   imports: [
@@ -43,6 +44,8 @@ import { IngredientesModule } from './ingredientes/ingredientes.module';
     AuthModule,
 
     IngredientesModule,
+
+    RecetasModule,
   ],
   controllers: [],
   providers: [
