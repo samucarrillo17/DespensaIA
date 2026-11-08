@@ -8,7 +8,7 @@ export function handleDBException(err: any): never {
   const logger = new Logger('DBException');
 
   if (err.code === '23505') {
-    throw new BadRequestException(err.detail);
+    throw new BadRequestException("El correo electronico ya esta registrado. Inicia Sesion o utiliza otro correo electronico.");
   }
 
   if (err.code === '23503') {

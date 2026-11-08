@@ -23,27 +23,44 @@ export class RecetasService {
     }
   }
 
-  async create(createRecetaDto: CreateRecetaDto): Promise<Receta> {
+  async create(
+    createRecetaDto: CreateRecetaDto,
+    usuarioId: string,
+  ): Promise<Receta> {
     try {
-      const receta = this.recetaRepository.create(createRecetaDto);
+      // El dueño siempre viene del JWT, nunca del body.
+      const receta = this.recetaRepository.create({
+        ...createRecetaDto,
+        usuarioId,
+      });
       return await this.recetaRepository.save(receta);
     } catch (error) {
       handleDBException(error);
     }
   }
 
-  async findAll(limit = 10, offset = 0): Promise<Receta[]> {
+  /** Solo devuelve las recetas del usuario autenticado. */
+  async findAll(
+    usuarioId: string,
+    limit = 10,
+    offset = 0,
+  ): Promise<Receta[]> {
     return this.recetaRepository.find({
+      where: { usuarioId },
       order: { createdAt: 'DESC' },
       skip: offset,
       take: Math.min(limit, 100),
     });
   }
 
-  async findOne(id: string): Promise<Receta> {
+  /**
+   * Busca la receta acotada al dueño: si el id existe pero pertenece a
+   * otro usuario, responde 404 (no revela que el recurso existe).
+   */
+  async findOne(id: string, usuarioId: string): Promise<Receta> {
     this.validarId(id);
 
-    const receta = await this.recetaRepository.findOneBy({ id });
+    const receta = await this.recetaRepository.findOneBy({ id, usuarioId });
 
     if (!receta) {
       throw new NotFoundException(`Receta con id ${id} no encontrada`);
@@ -59,17 +76,15 @@ export class RecetasService {
   async update(
     id: string,
     updateRecetaDto: UpdateRecetaDto,
+    usuarioId: string,
   ): Promise<Receta> {
     this.validarId(id);
 
-    const receta = await this.recetaRepository.preload({
-      id,
-      ...updateRecetaDto,
-    });
+    // Se busca acotado por usuario: preload({ id, ...dto }) NO comprobaría
+    // el dueño y permitiría editar filas ajenas.
+    const receta = await this.findOne(id, usuarioId);
 
-    if (!receta) {
-      throw new NotFoundException(`Receta con id ${id} no encontrada`);
-    }
+    Object.assign(receta, updateRecetaDto);
 
     try {
       return await this.recetaRepository.save(receta);
@@ -79,10 +94,10 @@ export class RecetasService {
   }
 
   /** Soft delete: marca deletedAt, la receta sigue en la BD. */
-  async remove(id: string): Promise<{ message: string }> {
+  async remove(id: string, usuarioId: string): Promise<{ message: string }> {
     this.validarId(id);
 
-    const receta = await this.findOne(id);
+    const receta = await this.findOne(id, usuarioId);
 
     await this.recetaRepository.softRemove(receta);
 

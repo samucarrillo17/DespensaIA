@@ -4,10 +4,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
-
+import type { Relation } from 'typeorm';
+import { Ingrediente } from '../../ingredientes/entities/ingrediente.entity';
+import { Receta } from '../../recetas/entities/receta.entity';
 
 @Entity('usuarios')
 export class Usuario {
@@ -25,6 +27,12 @@ export class Usuario {
 
   @CreateDateColumn()
   createdAt!: Date;
+
+  @OneToMany(() => Ingrediente, (ingrediente) => ingrediente.usuario)
+  ingredientes!: Relation<Ingrediente[]>;
+
+  @OneToMany(() => Receta, (receta) => receta.usuario)
+  recetas!: Relation<Receta[]>;
 
   @BeforeInsert()
   LOWERCASE_EMAIL() {
