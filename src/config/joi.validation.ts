@@ -7,4 +7,8 @@ export const joiValidationSchema = Joi.object({
   DB_HOST: Joi.string().default('localhost'),
   DB_PORT: Joi.number().default(5432),
   DB_USERNAME: Joi.string().default('postgres'),
+
+  // Gemini (IA)
+  GEMINI_API_KEY: Joi.string().required(),
+  GEMINI_MODEL: Joi.string().default('gemini-3.1-flash-lite'),
 });
