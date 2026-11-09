@@ -56,7 +56,7 @@ export class Receta {
 
   @CreateDateColumn()
   createdAt!: Date;
-
+j
   @DeleteDateColumn()
   deletedAt!: Date;
 }

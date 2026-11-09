@@ -11,6 +11,7 @@ import { createKeyv } from '@keyv/redis';
 import { IngredientesModule } from './ingredientes/ingredientes.module';
 import { RecetasModule } from './recetas/recetas.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
+import { AiModule } from './ai/ai.module';
 
 @Module({
   imports: [
@@ -49,6 +50,8 @@ import { UsuariosModule } from './usuarios/usuarios.module';
     RecetasModule,
 
     UsuariosModule,
+
+    AiModule,
   ],
   controllers: [],
   providers: [
