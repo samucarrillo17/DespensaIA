@@ -10,6 +10,7 @@ import {
 import type { Relation } from 'typeorm';
 import { Ingrediente } from '../../ingredientes/entities/ingrediente.entity';
 import { Receta } from '../../recetas/entities/receta.entity';
+import { Calificacione } from '../../calificaciones/entities/calificacione.entity';
 
 @Entity('usuarios')
 export class Usuario {
@@ -33,6 +34,9 @@ export class Usuario {
 
   @OneToMany(() => Receta, (receta) => receta.usuario)
   recetas!: Relation<Receta[]>;
+
+  @OneToMany(() => Calificacione, (calificacione) => calificacione.usuario)
+  calificaciones!: Relation<Calificacione[]>;
 
   @BeforeInsert()
   LOWERCASE_EMAIL() {

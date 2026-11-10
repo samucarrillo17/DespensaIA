@@ -12,6 +12,7 @@ import { IngredientesModule } from './ingredientes/ingredientes.module';
 import { RecetasModule } from './recetas/recetas.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { AiModule } from './ai/ai.module';
+import { CalificacionesModule } from './calificaciones/calificaciones.module';
 
 @Module({
   imports: [
@@ -52,6 +53,8 @@ import { AiModule } from './ai/ai.module';
     UsuariosModule,
 
     AiModule,
+
+    CalificacionesModule,
   ],
   controllers: [],
   providers: [

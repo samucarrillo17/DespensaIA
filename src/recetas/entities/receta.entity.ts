@@ -5,10 +5,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { EstadoDificultad } from '../interfaces/estado-dificultad.enum';
 import { Usuario } from '../../usuarios/entities/usuario.entity';
+import { Calificacione } from '../../calificaciones/entities/calificacione.entity';
+import type { Relation } from 'typeorm';
 
 export interface IngredienteReceta {
   ingrediente: string;
@@ -56,7 +59,10 @@ export class Receta {
 
   @CreateDateColumn()
   createdAt!: Date;
-j
+
   @DeleteDateColumn()
   deletedAt!: Date;
+
+  @OneToMany(() => Calificacione, (calificacione) => calificacione.receta)
+  calificaciones!: Relation<Calificacione[]>;
 }
