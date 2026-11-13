@@ -6,7 +6,7 @@ import { Usuario } from './entities/usuario.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { handleDBException } from '../common/helpers/handleDbException';
 import * as bcrypt from 'bcrypt';
-import { UsuarioPublico } from './interfaces/usuario-publico.pick';
+import { UsuarioPublicoDto } from './dto/usuario-publico.dto';
 
 @Injectable()
 export class UsuariosService {
@@ -15,7 +15,7 @@ export class UsuariosService {
     private readonly usuariosRepository: Repository<Usuario>,
   ) {}
   
-  async create(createUsuarioDto: CreateUsuarioDto): Promise<UsuarioPublico> {
+  async create(createUsuarioDto: CreateUsuarioDto): Promise<UsuarioPublicoDto> {
     try {
       const usuario = this.usuariosRepository.create({
         ...createUsuarioDto,
@@ -32,7 +32,7 @@ export class UsuariosService {
   async update(
     id: string,
     updateUsuarioDto: UpdateUsuarioDto,
-  ): Promise<UsuarioPublico> {
+  ): Promise<UsuarioPublicoDto> {
     const datosActualizados = { ...updateUsuarioDto };
 
     if (datosActualizados.contrasena) {
@@ -71,7 +71,7 @@ export class UsuariosService {
     });
   }
 
-  private omitirPassword(usuario: Usuario): UsuarioPublico {
+  private omitirPassword(usuario: Usuario): UsuarioPublicoDto {
     return {
       id: usuario.id,
       correo: usuario.correo,
