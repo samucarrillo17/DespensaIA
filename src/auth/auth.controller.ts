@@ -2,6 +2,7 @@ import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { registerUserDto } from './dto/register-user.dto';
+import { AuthResponseDto } from './dto/auth-response.dto';
 import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
@@ -10,12 +11,14 @@ export class AuthController {
 
   @Throttle({ default: { limit: 5, ttl: 120000 } })
   @Post('register')
-  create(@Body() registerDto: registerUserDto) {
+  create(
+    @Body() registerDto: registerUserDto,
+  ): Promise<AuthResponseDto> {
     return this.authService.register(registerDto);
   }
   @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Post('login')
-  login(@Body() loginDto: LoginUserDto) {
+  login(@Body() loginDto: LoginUserDto): Promise<AuthResponseDto> {
     return this.authService.login(loginDto);
   }
 }

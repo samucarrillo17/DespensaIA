@@ -6,6 +6,7 @@ import { registerUserDto } from './dto/register-user.dto';
 import { JwtPayload } from './interfaces/jwt.interface';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from './dto/login-user.dto';
+import { AuthResponseDto } from './dto/auth-response.dto';
 import * as bcrypt from 'bcrypt';
 import { UsuariosService } from '../usuarios/usuarios.service';
 
@@ -16,29 +17,37 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(registerDto: registerUserDto) {
+  async register(registerDto: registerUserDto): Promise<AuthResponseDto> {
     const nuevoUsuario = await this.usuarioService.create(registerDto);
-    const { id, correo} = nuevoUsuario;
-    const token = this.getJwtToken({ id, correo});
+    const { id, correo } = nuevoUsuario;
+    const token = this.getJwtToken({ id, correo });
+    // Se construye campo por campo (no spread) para que TypeScript
+    // garantice que contrasena nunca se escape en la respuesta.
     return {
-      ...nuevoUsuario,
+      id: nuevoUsuario.id,
+      correo: nuevoUsuario.correo,
+      nombre: nuevoUsuario.nombre,
+      createdAt: nuevoUsuario.createdAt,
       token,
     };
   }
 
-  async login(loginDto: LoginUserDto) {
+  async login(loginDto: LoginUserDto): Promise<AuthResponseDto> {
     const { correo, contrasena } = loginDto;
     const usuario = await this.usuarioService.findByEmail(correo);
     if (!usuario || !bcrypt.compareSync(contrasena, usuario.contrasena)) {
       throw new BadRequestException('Usuario o contraseña incorrectos');
     }
-    const { contrasena: _, ...rest } = usuario;
     const token = this.getJwtToken({
       id: usuario.id,
       correo: usuario.correo,
     });
+    // Idem: cada campo explícito, contrasena fuera de la respuesta.
     return {
-      ...rest,
+      id: usuario.id,
+      correo: usuario.correo,
+      nombre: usuario.nombre,
+      createdAt: usuario.createdAt,
       token,
     };
   }

@@ -13,6 +13,8 @@ import {
 import { RecetasService } from './recetas.service';
 import { CreateRecetaDto } from './dto/create-receta.dto';
 import { UpdateRecetaDto } from './dto/update-receta.dto';
+import { RecetaResponseDto } from './dto/receta-response.dto';
+import { MessageDto } from '../common/dto/message.dto';
 import { Auth } from '../auth/decorator/auth.decorator';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import { Throttle } from '@nestjs/throttler';
@@ -27,7 +29,7 @@ export class RecetasController {
   create(
     @GetUser('id') usuarioId: string,
     @Body() createRecetaDto: CreateRecetaDto,
-  ) {
+  ): Promise<RecetaResponseDto> {
     return this.recetasService.create(createRecetaDto, usuarioId);
   }
 
@@ -36,12 +38,15 @@ export class RecetasController {
     @GetUser('id') usuarioId: string,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number,
-  ) {
+  ): Promise<RecetaResponseDto[]> {
     return this.recetasService.findAll(usuarioId, limit, offset);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @GetUser('id') usuarioId: string) {
+  findOne(
+    @Param('id') id: string,
+    @GetUser('id') usuarioId: string,
+  ): Promise<RecetaResponseDto> {
     return this.recetasService.findOne(id, usuarioId);
   }
 
@@ -51,13 +56,16 @@ export class RecetasController {
     @Param('id') id: string,
     @GetUser('id') usuarioId: string,
     @Body() updateRecetaDto: UpdateRecetaDto,
-  ) {
+  ): Promise<RecetaResponseDto> {
     return this.recetasService.update(id, updateRecetaDto, usuarioId);
   }
 
   @Throttle({ default: { limit: 5, ttl: 120000 } })
   @Delete(':id')
-  remove(@Param('id') id: string, @GetUser('id') usuarioId: string) {
+  remove(
+    @Param('id') id: string,
+    @GetUser('id') usuarioId: string,
+  ): Promise<MessageDto> {
     return this.recetasService.remove(id, usuarioId);
   }
 }

@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { validate as isUUID } from 'uuid';
 import { CreateRecetaDto } from './dto/create-receta.dto';
 import { UpdateRecetaDto } from './dto/update-receta.dto';
+import { RecetaResponseDto } from './dto/receta-response.dto';
 import { Receta } from './entities/receta.entity';
 import { handleDBException } from '../common/helpers/handleDbException';
 
@@ -26,7 +27,7 @@ export class RecetasService {
   async create(
     createRecetaDto: CreateRecetaDto,
     usuarioId: string,
-  ): Promise<Receta> {
+  ): Promise<RecetaResponseDto> {
     try {
       // El dueño siempre viene del JWT, nunca del body.
       const receta = this.recetaRepository.create({
@@ -44,7 +45,7 @@ export class RecetasService {
     usuarioId: string,
     limit = 10,
     offset = 0,
-  ): Promise<Receta[]> {
+  ): Promise<RecetaResponseDto[]> {
     return this.recetaRepository.find({
       where: { usuarioId },
       order: { createdAt: 'DESC' },
@@ -57,7 +58,7 @@ export class RecetasService {
    * Busca la receta acotada al dueño: si el id existe pero pertenece a
    * otro usuario, responde 404 (no revela que el recurso existe).
    */
-  async findOne(id: string, usuarioId: string): Promise<Receta> {
+  async findOne(id: string, usuarioId: string): Promise<RecetaResponseDto> {
     this.validarId(id);
 
     const receta = await this.recetaRepository.findOneBy({ id, usuarioId });
@@ -77,7 +78,7 @@ export class RecetasService {
     id: string,
     updateRecetaDto: UpdateRecetaDto,
     usuarioId: string,
-  ): Promise<Receta> {
+  ): Promise<RecetaResponseDto> {
     this.validarId(id);
 
     // Se busca acotado por usuario: preload({ id, ...dto }) NO comprobaría
